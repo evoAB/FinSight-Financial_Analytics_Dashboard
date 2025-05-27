@@ -61,11 +61,9 @@ dotnet run
 https://localhost:5001/swagger
 
 ### 🛠 Setup Requirements
-.NET 8 SDK
-
-PostgreSQL
-
-pgAdmin for GUI-based DB management
+- .NET 8 SDK
+- PostgreSQL
+- pgAdmin for GUI-based DB management
 
 ### 👤 Author
 Abhishek Khadgi  
