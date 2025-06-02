@@ -4,12 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceDashboard.Controllers;
 
-[Authorize(Policy = "AdminOrAnalyst")]
+[AllowAnonymous]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/analytics")]
 public class AnalyticsController(IAnalyticsService analyticsService) : ControllerBase
 {
-
     [HttpGet("top-risky-accounts")]
     public async Task<IActionResult> GetTopRiskyAccounts([FromQuery] int count = 5)
     {

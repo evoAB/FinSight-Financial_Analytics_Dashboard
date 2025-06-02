@@ -8,7 +8,7 @@ namespace FinanceDashboard.Controllers;
 
 [Authorize(Policy = "AdminOnly")]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/category")]
 public class CategoryController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -18,6 +18,7 @@ public class CategoryController : ControllerBase
         _context = context;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult GetAll()
     {

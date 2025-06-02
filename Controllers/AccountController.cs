@@ -9,7 +9,7 @@ namespace FinanceDashboard.Controllers;
 
 [Authorize(Policy = "AdminOrAnalyst")]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/account")]
 public class AccountController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -19,6 +19,7 @@ public class AccountController : ControllerBase
         _context = context;
     }
 
+[AllowAnonymous]
     [HttpGet]
     public IActionResult GetAll()
     {
