@@ -1,27 +1,20 @@
-# Use the official ASP.NET runtime image as base
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
 
-# Use the SDK image to build the app
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
-# Copy the .csproj and restore dependencies
-COPY ["FinanceDashboard/FinanceDashboard.csproj", "FinanceDashboard/"]
-RUN dotnet restore "FinanceDashboard/FinanceDashboard.csproj"
+# Copy the project file and restore dependencies
+COPY ["FinanceDashboard.csproj", "./"]
+RUN dotnet restore "FinanceDashboard.csproj"
 
-# Copy all files and build the project
+# Copy all files and build
 COPY . .
-WORKDIR "/src/FinanceDashboard"
 RUN dotnet build "FinanceDashboard.csproj" -c Release -o /app/build
-
-# Publish the project
-FROM build AS publish
 RUN dotnet publish "FinanceDashboard.csproj" -c Release -o /app/publish
 
-# Final stage/image
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "FinanceDashboard.dll"]
