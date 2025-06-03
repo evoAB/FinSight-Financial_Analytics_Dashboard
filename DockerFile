@@ -6,17 +6,17 @@ EXPOSE 80
 # Use the SDK to build the app
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["YourApp/YourApp.csproj", "YourApp/"]
-RUN dotnet restore "YourApp/YourApp.csproj"
+COPY ["FinanceDashboard/FinanceDashboard.csproj", "FinanceDashboard/"]
+RUN dotnet restore "FinanceDashboard/FinanceDashboard.csproj"
 COPY . .
-WORKDIR "/src/YourApp"
-RUN dotnet build "YourApp.csproj" -c Release -o /app/build
+WORKDIR "/src/FinanceDashboard"
+RUN dotnet build "FinanceDashboard.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "YourApp.csproj" -c Release -o /app/publish
+RUN dotnet publish "FinanceDashboard.csproj" -c Release -o /app/publish
 
 # Copy the built app into the base image and set entrypoint
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "YourApp.dll"]
+ENTRYPOINT ["dotnet", "FinanceDashboard.dll"]
