@@ -114,6 +114,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    Console.WriteLine("🔍 Using DB connection string: " + builder.Configuration.GetConnectionString("DefaultConnection"));
+
     db.Database.Migrate();
 }
 
