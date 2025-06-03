@@ -3,14 +3,15 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy the .csproj file and restore dependencies
-COPY ["FinanceDashboard/FinanceDashboard.csproj", "FinanceDashboard/"]
-RUN dotnet restore "FinanceDashboard/FinanceDashboard.csproj"
+COPY ["FinanceDashboard.csproj", "./"]
+
+RUN dotnet restore "FinanceDashboard.csproj"
 
 # Copy the rest of the files into the container
 COPY . .
 
 # Build the app
-WORKDIR "/src/FinanceDashboard"
+WORKDIR "/src"
 RUN dotnet build "FinanceDashboard.csproj" -c Release -o /app/build
 
 # Publish the app
