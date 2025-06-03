@@ -1,24 +1,29 @@
-# Use the official .NET SDK image to build the app
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
-EXPOSE 80
-
-# Use the SDK to build the app
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+# Use the official .NET 8.0 SDK image to build the app
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy the .csproj file and restore dependencies
-COPY ["FinanceDashboard.csproj", "./"]
-RUN dotnet restore "FinanceDashboard.csproj"
+COPY ["FinanceDashboard/FinanceDashboard.csproj", "FinanceDashboard/"]
+RUN dotnet restore "FinanceDashboard/FinanceDashboard.csproj"
 
-# Copy all files from the repo into the container
+# Copy the rest of the files into the container
 COPY . .
-WORKDIR "/src"
+
+# Build the app
+WORKDIR "/src/FinanceDashboard"
 RUN dotnet build "FinanceDashboard.csproj" -c Release -o /app/build
+
+# Publish the app
+FROM build AS publish
 RUN dotnet publish "FinanceDashboard.csproj" -c Release -o /app/publish
 
-# Set up the final image
-FROM base AS final
+# Use the .NET 8.0 ASP.NET runtime image to run the app
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-COPY --from=build /app/publish .
+EXPOSE 80
+
+# Copy the built app from the publish step
+COPY --from=publish /app/publish .
+
+# Set the entrypoint
 ENTRYPOINT ["dotnet", "FinanceDashboard.dll"]
