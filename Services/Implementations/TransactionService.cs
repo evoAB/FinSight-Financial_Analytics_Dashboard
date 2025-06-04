@@ -13,6 +13,7 @@ public class TransactionService(AppDbContext context) : ITransactionService
         return await context.Transactions.Select(transaction => new TransactionResponseDto
         {
             Id = transaction.Id,
+            Title = transaction.Title,
             AccountId = transaction.AccountId,
             AccountName = transaction.Account.Name,
             CategoryId = transaction.CategoryId,
@@ -31,6 +32,7 @@ public class TransactionService(AppDbContext context) : ITransactionService
         return new TransactionResponseDto
         {
             Id = transaction.Id,
+            Title = transaction.Title,
             AccountId = transaction.AccountId,
             AccountName = transaction.Account.Name,
             CategoryId = transaction.CategoryId,
@@ -46,6 +48,7 @@ public class TransactionService(AppDbContext context) : ITransactionService
         var transaction = new Transaction
         {
             AccountId = dto.AccountId,
+            Title = dto.Title,
             Amount = dto.Amount,
             Date = dto.Date,
             CategoryId = dto.CategoryId,
@@ -58,6 +61,7 @@ public class TransactionService(AppDbContext context) : ITransactionService
         return new TransactionResponseDto
         {
             Id = transaction.Id,
+            Title = transaction.Title,
             AccountId = transaction.AccountId,
             AccountName = transaction.Account.Name,
             CategoryId = transaction.CategoryId,
@@ -73,6 +77,7 @@ public class TransactionService(AppDbContext context) : ITransactionService
         var transaction = await context.Transactions.FindAsync(id);
         if (transaction == null) return null;
 
+        transaction.Title = dto.Title;
         transaction.Amount = dto.Amount;
         transaction.Date = dto.Date;
         transaction.CategoryId = dto.CategoryId;
@@ -83,6 +88,7 @@ public class TransactionService(AppDbContext context) : ITransactionService
         return new TransactionResponseDto
         {
             Id = transaction.Id,
+            Title = transaction.Title,
             AccountId = transaction.AccountId,
             AccountName = transaction.Account.Name,
             CategoryId = transaction.CategoryId,

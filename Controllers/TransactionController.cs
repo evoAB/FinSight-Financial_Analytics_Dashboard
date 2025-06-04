@@ -26,6 +26,7 @@ public class TransactionController : ControllerBase
             .Select(t => new TransactionResponseDto
             {
                 Id = t.Id,
+                Title = t.Title,
                 AccountId = t.AccountId,
                 AccountName = t.Account.Name,
                 CategoryId = t.CategoryId,
@@ -46,6 +47,7 @@ public class TransactionController : ControllerBase
             .Select(t => new TransactionResponseDto
             {
                 Id = t.Id,
+                Title = t.Title,
                 AccountId = t.AccountId,
                 AccountName = t.Account.Name,
                 CategoryId = t.CategoryId,
@@ -66,8 +68,9 @@ public class TransactionController : ControllerBase
         var transaction = new Transaction
         {
             AccountId = dto.AccountId,
+            Title = dto.Title,
             Amount = dto.Amount,
-            Date = dto.Date,
+            Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc),
             CategoryId = dto.CategoryId,
             Type = dto.Type
         };
@@ -85,7 +88,8 @@ public class TransactionController : ControllerBase
         if (t == null) return NotFound();
 
         t.Amount = dto.Amount;
-        t.Date = dto.Date;
+        t.Title = dto.Title;
+        t.Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc);
         t.CategoryId = dto.CategoryId;
         t.Type = dto.Type;
 

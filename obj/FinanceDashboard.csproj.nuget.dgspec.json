@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\FinSight\\FinSight_Backend\\FinanceDashboard\\FinanceDashboard.csproj": {}
+    "d:\\FinSight\\FinSight_Backend\\FinanceDashboard\\FinanceDashboard.csproj": {}
   },
   "projects": {
-    "D:\\FinSight\\FinSight_Backend\\FinanceDashboard\\FinanceDashboard.csproj": {
+    "d:\\FinSight\\FinSight_Backend\\FinanceDashboard\\FinanceDashboard.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\FinSight\\FinSight_Backend\\FinanceDashboard\\FinanceDashboard.csproj",
+        "projectUniqueName": "d:\\FinSight\\FinSight_Backend\\FinanceDashboard\\FinanceDashboard.csproj",
         "projectName": "FinanceDashboard",
-        "projectPath": "D:\\FinSight\\FinSight_Backend\\FinanceDashboard\\FinanceDashboard.csproj",
+        "projectPath": "d:\\FinSight\\FinSight_Backend\\FinanceDashboard\\FinanceDashboard.csproj",
         "packagesPath": "C:\\Users\\Abhi\\.nuget\\packages\\",
-        "outputPath": "D:\\FinSight\\FinSight_Backend\\FinanceDashboard\\obj\\",
+        "outputPath": "d:\\FinSight\\FinSight_Backend\\FinanceDashboard\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Abhi\\AppData\\Roaming\\NuGet\\NuGet.Config"

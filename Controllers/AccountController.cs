@@ -19,7 +19,7 @@ public class AccountController : ControllerBase
         _context = context;
     }
 
-[AllowAnonymous]
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult GetAll()
     {

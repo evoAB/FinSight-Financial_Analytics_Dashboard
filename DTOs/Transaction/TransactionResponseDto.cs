@@ -3,6 +3,7 @@ namespace FinanceDashboard.DTOs.Transaction;
 public class TransactionResponseDto
 {
     public int Id { get; set; }
+    public string Title { get; set; }
     public int AccountId { get; set; }
     public string AccountName { get; set; }
 
