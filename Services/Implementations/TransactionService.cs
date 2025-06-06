@@ -45,58 +45,86 @@ public class TransactionService(AppDbContext context) : ITransactionService
 
     public async Task<TransactionResponseDto> CreateAsync(CreateTransactionDto dto)
     {
-        var transaction = new Transaction
-        {
-            AccountId = dto.AccountId,
-            Title = dto.Title,
-            Amount = dto.Amount,
-            Date = dto.Date,
-            CategoryId = dto.CategoryId,
-            Type = dto.Type
-        };
+        using var transaction = await context.Database.BeginTransactionAsync();
 
-        context.Transactions.Add(transaction);
-        context.SaveChanges();
-
-        return new TransactionResponseDto
+        try
         {
-            Id = transaction.Id,
-            Title = transaction.Title,
-            AccountId = transaction.AccountId,
-            AccountName = transaction.Account.Name,
-            CategoryId = transaction.CategoryId,
-            CategoryName = transaction.Category.Name,
-            Amount = transaction.Amount,
-            Date = transaction.Date,
-            Type = transaction.Type
-        };
+            var transactionEntity = new Transaction
+            {
+                AccountId = dto.AccountId,
+                Title = dto.Title,
+                Amount = dto.Amount,
+                Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc),
+                CategoryId = dto.CategoryId,
+                Type = dto.Type
+            };
+
+            context.Transactions.Add(transactionEntity);
+            await context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+
+            return new TransactionResponseDto
+            {
+                Id = transactionEntity.Id,
+                Title = transactionEntity.Title,
+                AccountId = transactionEntity.AccountId,
+                AccountName = transactionEntity.Account?.Name,
+                CategoryId = transactionEntity.CategoryId,
+                CategoryName = transactionEntity.Category?.Name,
+                Amount = transactionEntity.Amount,
+                Date = transactionEntity.Date,
+                Type = transactionEntity.Type
+            };
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
+
 
     public async Task<TransactionResponseDto?> UpdateAsync(int id, UpdateTransactionDto dto)
     {
-        var transaction = await context.Transactions.FindAsync(id);
-        if (transaction == null) return null;
+        using var dbTransaction = await context.Database.BeginTransactionAsync();
 
-        transaction.Title = dto.Title;
-        transaction.Amount = dto.Amount;
-        transaction.Date = dto.Date;
-        transaction.CategoryId = dto.CategoryId;
-        transaction.Type = dto.Type;
-
-        context.SaveChanges();
-
-        return new TransactionResponseDto
+        try
         {
-            Id = transaction.Id,
-            Title = transaction.Title,
-            AccountId = transaction.AccountId,
-            AccountName = transaction.Account.Name,
-            CategoryId = transaction.CategoryId,
-            CategoryName = transaction.Category.Name,
-            Amount = transaction.Amount,
-            Date = transaction.Date,
-            Type = transaction.Type
-        };
+            var transaction = await context.Transactions
+                    .Include(t => t.Account)
+                    .Include(t => t.Category)
+                    .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (transaction == null) return null;
+
+            transaction.Title = dto.Title;
+            transaction.Amount = dto.Amount;
+            transaction.Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc);
+            transaction.CategoryId = dto.CategoryId;
+            transaction.Type = dto.Type;
+
+            await context.SaveChangesAsync();
+            await dbTransaction.CommitAsync();
+
+            return new TransactionResponseDto
+            {
+                Id = transaction.Id,
+                Title = transaction.Title,
+                AccountId = transaction.AccountId,
+                AccountName = transaction.Account?.Name,
+                CategoryId = transaction.CategoryId,
+                CategoryName = transaction.Category?.Name,
+                Amount = transaction.Amount,
+                Date = transaction.Date,
+                Type = transaction.Type
+            };
+        }
+        catch
+        {
+            await dbTransaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task DeleteAsync(int id)
@@ -105,7 +133,6 @@ public class TransactionService(AppDbContext context) : ITransactionService
         if (transaction == null) return;
 
         context.Transactions.Remove(transaction);
-        context.SaveChanges();
-
+        await context.SaveChangesAsync();
     }
 }

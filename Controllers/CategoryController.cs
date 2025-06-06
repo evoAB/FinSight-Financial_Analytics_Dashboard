@@ -9,82 +9,41 @@ namespace FinanceDashboard.Controllers;
 [Authorize(Policy = "AdminOnly")]
 [ApiController]
 [Route("api/category")]
-public class CategoryController : ControllerBase
+public class CategoryController(ICategoryService categoryService) : ControllerBase
 {
-    private readonly AppDbContext _context;
-
-    public CategoryController(AppDbContext context)
-    {
-        _context = context;
-    }
-
     [AllowAnonymous]
     [HttpGet]
-    public IActionResult GetAll()
+    async public Task<IActionResult> GetAll()
     {
-        var categories = _context.Categories
-            .Select(c => new CategoryResponseDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Type = c.Type
-            }).ToList();
-
+        var categories = await categoryService.GetAllAsync();
         return Ok(categories);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    async public Task<IActionResult> GetById(int id)
     {
-        var c = _context.Categories.Find(id);
-        if (c == null) return NotFound();
-
-        return Ok(new CategoryResponseDto
-        {
-            Id = c.Id,
-            Name = c.Name,
-            Type = c.Type
-        });
+        var result = await categoryService.GetByIdAsync(id);
+        return Ok(result);
     }
 
     [HttpPost]
-    public IActionResult Create(CreateCategoryDto dto)
+    async public Task<IActionResult> Create(CreateCategoryDto dto)
     {
-        var category = new Category
-        {
-            Name = dto.Name,
-            Type = dto.Type
-        };
-
-        _context.Categories.Add(category);
-        _context.SaveChanges();
-
+        var category = await categoryService.CreateAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, UpdateCategoryDto dto)
+    async public Task<IActionResult> Update(int id, UpdateCategoryDto dto)
     {
-        var c = _context.Categories.Find(id);
-        if (c == null) return NotFound();
-
-        c.Name = dto.Name;
-        c.Type = dto.Type;
-
-        _context.SaveChanges();
-
+        await categoryService.UpdateAsync(id, dto);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    async public Task<IActionResult> Delete(int id)
     {
-        var c = _context.Categories.Find(id);
-        if (c == null) return NotFound();
-
-        _context.Categories.Remove(c);
-        _context.SaveChanges();
-
+        await categoryService.DeleteAsync(id);
         return NoContent();
     }
 }

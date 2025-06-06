@@ -10,93 +10,44 @@ namespace FinanceDashboard.Controllers;
 [Authorize(Policy = "AdminOrAnalyst")]
 [ApiController]
 [Route("api/account")]
-public class AccountController : ControllerBase
+public class AccountController(IAccountService accountService) : ControllerBase
 {
-    private readonly AppDbContext _context;
-
-    public AccountController(AppDbContext context)
-    {
-        _context = context;
-    }
-
     [AllowAnonymous]
     [HttpGet]
-    public IActionResult GetAll()
+    async public Task<IActionResult> GetAll()
     {
-        var accounts = _context.Accounts
-            .Select(a => new AccountResponseDto
-            {
-                Id = a.Id,
-                Name = a.Name,
-                AccountNumber = a.AccountNumber,
-                RiskScore = a.RiskScore,
-                CreatedAt = a.CreatedAt
-            }).ToList();
-
+        var accounts = await accountService.GetAllAsync();
         return Ok(accounts);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    async public Task<IActionResult> GetById(int id)
     {
-        var a = _context.Accounts.Find(id);
-        if (a == null) return NotFound();
-
-        var result = new AccountResponseDto
-        {
-            Id = a.Id,
-            Name = a.Name,
-            AccountNumber = a.AccountNumber,
-            RiskScore = a.RiskScore,
-            CreatedAt = a.CreatedAt
-        };
-
+        var result = await accountService.GetByIdAsync(id);
         return Ok(result);
     }
 
     [Authorize(Policy = "AdminOnly")]
     [HttpPost]
-    public IActionResult Create(CreateAccountDto dto)
+    async public Task<IActionResult> Create(CreateAccountDto dto)
     {
-        var account = new Account
-        {
-            Name = dto.Name,
-            AccountNumber = dto.AccountNumber,
-            RiskScore = dto.RiskScore
-        };
-
-        _context.Accounts.Add(account);
-        _context.SaveChanges();
-
+        var account = await accountService.CreateAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = account.Id }, account);
     }
 
     [Authorize(Policy = "AdminOnly")]
     [HttpPut("{id}")]
-    public IActionResult Update(int id, UpdateAccountDto dto)
+    async public Task<IActionResult> Update(int id, UpdateAccountDto dto)
     {
-        var account = _context.Accounts.Find(id);
-        if (account == null) return NotFound();
-
-        account.Name = dto.Name;
-        account.AccountNumber = dto.AccountNumber;
-        account.RiskScore = dto.RiskScore;
-
-        _context.SaveChanges();
-
+        await accountService.UpdateAsync(id, dto);
         return NoContent();
     }
 
     [Authorize(Policy = "AdminOnly")]
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    async public Task<IActionResult> Delete(int id)
     {
-        var account = _context.Accounts.Find(id);
-        if (account == null) return NotFound();
-
-        _context.Accounts.Remove(account);
-        _context.SaveChanges();
-
+        await accountService.DeleteAsync(id);
         return NoContent();
     }
 }

@@ -38,7 +38,7 @@ public class CategoryService(AppDbContext context) : ICategoryService
         };
 
         context.Categories.Add(category);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
 
         return new CategoryResponseDto { Id = category.Id, Name = category.Name, Type = category.Type };
 
